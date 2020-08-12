@@ -45,7 +45,7 @@ class LogisticRegression:
             
             # backward propagation
             dW = (X_train @ (pred - y_train).T) / n_examples
-            db = np.sum(pred - y_train) / n_examples
+            db = np.mean(pred - y_train)
             
             self.W -= self.learning_rate * dW
             self.b -= self.learning_rate * db
