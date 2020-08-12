@@ -16,6 +16,7 @@ class NeuralNetworkClassifier:
         self.b1 = None                          # bias for hidden layer
         self.W2 = None                          # weights for output layer
         self.b2 = None                          # bias for output layer
+        self.costs = None                       # cost per every 500th iteration
 
 
     def fit(self, X, y):
@@ -36,6 +37,7 @@ class NeuralNetworkClassifier:
         self.b1 = np.zeros((n_h, 1))
         self.W2 = np.random.randn(n_y, n_h) * 0.01
         self.b2 = np.zeros((n_y, 1))
+        self.costs = list()
             
         # run gradient descent trying minimize cost
         for i in np.arange(self.n_iterations):
@@ -62,12 +64,20 @@ class NeuralNetworkClassifier:
             self.W2 = self.W2 - self.learning_rate * dW2
             self.b2 = self.b2 - self.learning_rate * db2
             
-            if self.verbose and i % 1000 == 0:
-                print ("Cost after iteration %i: %f" %(i, cost))
+            # Record the costs
+            if i % 500 == 0:
+                self.costs.append(cost)
+        
+            # Print the cost every 500 training iterations
+            if self.verbose and i % 500 == 0:
+                print ("Cost after iteration %i: %f" % (i, cost))
 
 
     def predict_proba(self, X):
-        '''Return array with predicted probabilities of size (1, n_samples)'''
+        '''X - np.array of training examples of size (n_examples, n_features)
+        
+           Return array with predicted probabilities of size (1, n_samples)'''
+        
         Z1 = self.W1 @ X.T + self.b1
         A1 = np.tanh(Z1)
         Z2 = self.W2 @ A1 + self.b2
@@ -76,7 +86,10 @@ class NeuralNetworkClassifier:
     
     
     def predict(self, X, treshhold=0.5):
-        '''Return array with predicted labels (0 or 1) of size (1, n_samples)'''
+        '''X - np.array of training examples of size (n_examples, n_features)
+        
+           Return array with predicted labels (0 or 1) of size (1, n_samples)'''
+        
         probabilities = self.predict_proba(X)
         prediction = (probabilities > treshhold).astype(float)
         return prediction
