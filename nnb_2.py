@@ -66,15 +66,6 @@ class NeuralNetworkClassifier:
                 print ("Cost after iteration %i: %f" %(i, cost))
 
 
-    def predict(self, X, treshhold=0.5):
-        '''Return array with predicted leabels (0 or 1) of size (1, n_samples)'''
-        Z1 = self.W1 @ X.T + self.b1
-        A1 = np.tanh(Z1)
-        Z2 = self.W2 @ A1 + self.b2
-        prediction = (sigmoid(Z2) > treshhold).astype(float)
-        return prediction
-
-
     def predict_proba(self, X):
         '''Return array with predicted probabilities of size (1, n_samples)'''
         Z1 = self.W1 @ X.T + self.b1
@@ -82,3 +73,10 @@ class NeuralNetworkClassifier:
         Z2 = self.W2 @ A1 + self.b2
         probabilities = sigmoid(Z2)
         return probabilities
+    
+    
+    def predict(self, X, treshhold=0.5):
+        '''Return array with predicted labels (0 or 1) of size (1, n_samples)'''
+        probabilities = self.predict_proba(X)
+        prediction = (probabilities > treshhold).astype(float)
+        return prediction
